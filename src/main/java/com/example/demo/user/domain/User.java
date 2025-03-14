@@ -1,12 +1,16 @@
 package com.example.demo.user.domain;
 
 import com.example.demo.common.BaseEntity;
+import com.example.demo.common.Image;
+import com.example.demo.team.domain.Team;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -38,6 +42,10 @@ public class User extends BaseEntity {
     @Column(name = "password_hash", nullable = false, length = 60)
     private String passwordHash;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "image_id")
+    private Image image;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "user_roles",
@@ -58,4 +66,7 @@ public class User extends BaseEntity {
 
     @Column(name = "account_non_expired")
     private boolean accountNonExpired = true;
+
+    @ManyToMany(mappedBy = "users")
+    private List<Team> teams = new ArrayList<>();
 }

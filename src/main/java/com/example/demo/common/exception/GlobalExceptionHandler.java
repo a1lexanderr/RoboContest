@@ -22,7 +22,9 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.toMap(
                         FieldError::getField,
                         error -> error.getDefaultMessage() != null ? error.getDefaultMessage() : "Validation error"
+
                 ));
+
         return ErrorResponse.builder().message("Validation error").details(errors).build();
     }
 

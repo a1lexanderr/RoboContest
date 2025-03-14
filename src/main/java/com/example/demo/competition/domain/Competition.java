@@ -1,5 +1,6 @@
 package com.example.demo.competition.domain;
 
+import com.example.demo.application.domain.ApplicationForm;
 import com.example.demo.common.BaseEntity;
 import com.example.demo.common.Image;
 import com.example.demo.team.domain.Team;
@@ -33,7 +34,9 @@ public class Competition extends BaseEntity {
     private LocalDate endDate;
 
     @Builder.Default
-    @OneToMany(mappedBy = "competition", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "competition", cascade = CascadeType.ALL)
     private List<Team> teams = new ArrayList<>();
 
+    @OneToMany(mappedBy = "competition", cascade = CascadeType.ALL)
+    private List<ApplicationForm> applications = new ArrayList<>();
 }

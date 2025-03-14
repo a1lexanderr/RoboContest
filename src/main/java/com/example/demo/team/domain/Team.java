@@ -1,11 +1,16 @@
 package com.example.demo.team.domain;
 
+import com.example.demo.application.domain.ApplicationForm;
 import com.example.demo.common.BaseEntity;
 import com.example.demo.common.Image;
 import com.example.demo.competition.domain.Competition;
 import com.example.demo.robot.domain.Robot;
+import com.example.demo.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @EqualsAndHashCode(callSuper = true)
@@ -18,7 +23,6 @@ import lombok.*;
 public class Team extends BaseEntity {
     private String name;
     private String description;
-    private String teamMembers;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id", referencedColumnName = "id")
@@ -31,4 +35,15 @@ public class Team extends BaseEntity {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "competition_id", referencedColumnName = "id")
     private Competition competition;
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_team",
+            joinColumns = @JoinColumn(name = "team_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<User> users = new ArrayList<>(); ;
+
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
+    private List<ApplicationForm> applications = new ArrayList<>();
 }
