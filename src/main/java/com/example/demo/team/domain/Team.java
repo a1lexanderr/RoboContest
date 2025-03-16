@@ -7,6 +7,7 @@ import com.example.demo.competition.domain.Competition;
 import com.example.demo.robot.domain.Robot;
 import com.example.demo.user.domain.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -21,6 +22,8 @@ import java.util.List;
 @Builder
 @Table(name = "teams")
 public class Team extends BaseEntity {
+    @Column(nullable = false)
+    @NotBlank
     private String name;
     private String description;
 
@@ -36,13 +39,8 @@ public class Team extends BaseEntity {
     @JoinColumn(name = "competition_id", referencedColumnName = "id")
     private Competition competition;
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_team",
-            joinColumns = @JoinColumn(name = "team_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private List<User> users = new ArrayList<>(); ;
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TeamMember> members = new ArrayList<>();
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
     private List<ApplicationForm> applications = new ArrayList<>();
