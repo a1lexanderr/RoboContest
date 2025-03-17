@@ -1,5 +1,6 @@
 package com.example.demo.common.exception;
 
+import com.example.demo.common.exception.business.BusinessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;

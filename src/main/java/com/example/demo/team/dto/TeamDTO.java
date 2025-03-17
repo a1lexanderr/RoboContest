@@ -15,6 +15,6 @@ public record TeamDTO(
         String description,
         ImageDTO image,
         RobotDTO robot,
-        List<User> users
+        List<TeamMemberDTO> members
 ) {
 }

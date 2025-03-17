@@ -1,11 +1,9 @@
 package com.example.demo.security.service;
 
-import com.example.demo.common.exception.BusinessException;
+import com.example.demo.common.exception.business.BusinessException;
 import com.example.demo.security.dto.AuthResponse;
 import com.example.demo.security.dto.LoginRequestDTO;
 import com.example.demo.security.jwt.JwtTokenProvider;
-import com.example.demo.user.domain.User;
-import com.example.demo.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

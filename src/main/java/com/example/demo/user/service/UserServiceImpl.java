@@ -1,7 +1,6 @@
 package com.example.demo.user.service;
 
-import com.example.demo.common.exception.BusinessException;
-import com.example.demo.user.domain.Role;
+import com.example.demo.common.exception.business.BusinessException;
 import com.example.demo.user.domain.User;
 import com.example.demo.user.dto.UserDTO;
 import com.example.demo.user.dto.UserRegistrationDTO;

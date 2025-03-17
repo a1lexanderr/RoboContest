@@ -23,13 +23,16 @@ import java.util.List;
 @Table(name = "teams")
 public class Team extends BaseEntity {
     @Column(nullable = false)
-    @NotBlank
     private String name;
     private String description;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id", referencedColumnName = "id")
     private Image image;
+
+    @ManyToOne
+    @JoinColumn(name = "captain_id", nullable = false)
+    private User captain;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "robot_id", referencedColumnName = "id")

@@ -21,12 +21,9 @@ public class Image extends BaseEntity {
     @Column(name = "is_main")
     private boolean isMain;
 
-    @Column(nullable = false)
+    @Column(name = "file_path")
+    private String filePath;
+
+    @Column(name = "file_name")
     private String fileName;
-    @Column(nullable = false)
-    private String contentType;
-    private long size;
-    @Lob
-    @Column(length = 1000000)
-    private byte[] data;
 }
