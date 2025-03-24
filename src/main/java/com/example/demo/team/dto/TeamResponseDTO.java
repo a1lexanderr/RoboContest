@@ -1,6 +1,5 @@
 package com.example.demo.team.dto;
 
-import com.example.demo.common.dto.ImageResponseDTO;
 import com.example.demo.robot.dto.RobotResponseDTO;
 
 import java.time.LocalDateTime;

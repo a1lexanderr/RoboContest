@@ -17,6 +17,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ErrorResponse handleValidationExceptions(MethodArgumentNotValidException ex) {
+
         Map<String, String> errors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
