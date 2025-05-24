@@ -21,8 +21,11 @@ public class ImageServiceImpl implements ImageService {
     }
     @Override
     public Image saveImage(MultipartFile file, String title, boolean isMain, String entityType) {
+        log.info("Saving image");
         String subdirectory = determineSubdirectory(entityType);
+        log.info("Subdirectory: {}", subdirectory);
         String filePath = fileStorageService.storeFile(file, subdirectory );
+        log.info("Saving image to {}", filePath);
 
         Image image = Image
                 .builder()
@@ -36,6 +39,7 @@ public class ImageServiceImpl implements ImageService {
                 .url(fileStorageService.buildFileUrl(filePath))
                 .build();
 
+        log.info("Saving image to {}", image);
         return imageRepository.save(image);
     }
 
@@ -86,5 +90,15 @@ public class ImageServiceImpl implements ImageService {
             case "gallery" -> "gallery";
             default -> "misc";
         };
+    }
+
+    @Override
+    public Image findImageById(Long id) {
+        log.debug("Finding image by ID: {}", id);
+        return imageRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.warn("Image not found with ID: {}", id);
+                    return new ResourceNotFoundException("Image not found with id: " + id);
+                });
     }
 }

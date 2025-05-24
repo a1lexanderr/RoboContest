@@ -19,7 +19,11 @@ import java.util.List;
 @Table(name = "competitions")
 @Builder
 public class Competition extends BaseEntity {
+    @Column(nullable = false, length = 50)
     private String title;
+
+    @Lob
+    @Column(nullable = false)
     private String description;
 
     @OneToOne(cascade = CascadeType.ALL)
@@ -28,15 +32,11 @@ public class Competition extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private CompetitionStatus status;
 
-    @Column(name = "start_date")
+    @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
-    @Column(name = "end_date")
+    @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "competition", cascade = CascadeType.ALL)
-    private List<Team> teams = new ArrayList<>();
-
-    @OneToMany(mappedBy = "competition", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "competition", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ApplicationForm> applications = new ArrayList<>();
 }

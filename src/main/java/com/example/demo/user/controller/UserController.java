@@ -1,6 +1,5 @@
 package com.example.demo.user.controller;
 
-import com.example.demo.security.dto.LoginRequestDTO;
 import com.example.demo.user.dto.UserDTO;
 import com.example.demo.user.dto.UserRegistrationDTO;
 import com.example.demo.user.service.UserService;
@@ -29,7 +28,5 @@ public class UserController {
                 .created(URI.create("/api/users/" + createdUser.id()))
                 .body(createdUser);
     }
-
-
 
 }

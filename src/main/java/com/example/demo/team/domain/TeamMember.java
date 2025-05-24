@@ -1,10 +1,7 @@
 package com.example.demo.team.domain;
 
 import com.example.demo.common.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
@@ -21,6 +18,6 @@ public class TeamMember extends BaseEntity {
     private String role;
 
     @ManyToOne
-    @Column(name = "team_id")
+    @JoinColumn(name = "team_id")
     private Team team;
 }

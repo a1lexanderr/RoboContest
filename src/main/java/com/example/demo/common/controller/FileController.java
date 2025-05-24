@@ -1,5 +1,6 @@
 package com.example.demo.common.controller;
 
+import com.example.demo.common.dto.ImageDTO;
 import com.example.demo.common.service.FileStorageService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

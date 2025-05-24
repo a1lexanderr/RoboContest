@@ -1,5 +1,6 @@
 package com.example.demo.team.dto;
 
+import com.example.demo.common.dto.ImageDTO;
 import com.example.demo.robot.dto.RobotResponseDTO;
 
 import java.time.LocalDateTime;
@@ -9,7 +10,7 @@ public record TeamResponseDTO(
         Long id,
         String name,
         String description,
-        ImageResponseDTO image,
+        ImageDTO image,
         RobotResponseDTO robot,
         List<TeamMemberResponseDTO> members,
         LocalDateTime createdAt,

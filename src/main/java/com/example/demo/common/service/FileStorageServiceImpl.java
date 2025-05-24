@@ -3,6 +3,7 @@ package com.example.demo.common.service;
 import com.example.demo.common.exception.business.file.InvalidFileException;
 import com.example.demo.common.exception.business.user.UserNotFoundException;
 import com.example.demo.common.exception.technical.StorageException;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +20,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -41,19 +41,51 @@ public class FileStorageServiceImpl implements FileStorageService {
 
     private Path rootLocation;
 
-    public String storeFile(MultipartFile file, String subdirectory){
-        validateFile(file);
-        try{
-            Path targetDir = rootLocation.resolve(subdirectory).normalize();
-            Files.createDirectories(targetDir);
+    @PostConstruct
+    public void init() {
+        try {
+            log.info("Initializing storage with location: {}", storageLocation);
+            rootLocation = Paths.get(storageLocation).toAbsolutePath().normalize();
+            log.debug("Normalized absolute path: {}", rootLocation);
 
-            String fileName = UUID.randomUUID().toString() + getFileExtension(file.getOriginalFilename());
-            Path filePath = targetDir.resolve(fileName);
+            if (Files.exists(rootLocation)) {
+                log.info("Storage directory already exists: {}", rootLocation);
+            } else {
+                Files.createDirectories(rootLocation);
+                log.info("Created storage directory: {}", rootLocation);
+            }
+        } catch (IOException e) {
+            log.error("Failed to initialize storage at location: {}. Error: {}", storageLocation, e.getMessage(), e);
+            throw new StorageException("Could not initialize storage location", e);
+        }
+    }
+
+    public String storeFile(MultipartFile file, String subdirectory) {
+        String fileName = file.getOriginalFilename();
+        log.debug("Starting file storage process for file: {}, subdirectory: {}", fileName, subdirectory);
+
+        try {
+            validateFile(file);
+            log.debug("File validation passed: {}", fileName);
+
+            Path targetDir = rootLocation.resolve(subdirectory).normalize();
+            if (!Files.exists(targetDir)) {
+                log.debug("Creating target directory: {}", targetDir);
+                Files.createDirectories(targetDir);
+            }
+
+            String newFileName = UUID.randomUUID().toString() + getFileExtension(fileName);
+            Path filePath = targetDir.resolve(newFileName);
+
+            log.debug("About to copy file to path: {}", filePath);
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-            return Paths.get(subdirectory, fileName).toString();
-        }catch (IOException e){
-            throw new StorageException("Failed to store file " + file.getOriginalFilename(), e);
+            String result = Paths.get(subdirectory, newFileName).toString();
+            log.info("File successfully stored: {}, size: {} bytes", result, file.getSize());
+            return result;
+        } catch (IOException e) {
+            log.error("Storage failure for file: {}, reason: {}", fileName, e.getMessage(), e);
+            throw new StorageException("Failed to store file " + fileName, e);
         }
     }
 

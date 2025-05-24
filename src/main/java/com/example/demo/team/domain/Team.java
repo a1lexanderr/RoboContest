@@ -3,11 +3,9 @@ package com.example.demo.team.domain;
 import com.example.demo.application.domain.ApplicationForm;
 import com.example.demo.common.BaseEntity;
 import com.example.demo.common.Image;
-import com.example.demo.competition.domain.Competition;
 import com.example.demo.robot.domain.Robot;
 import com.example.demo.user.domain.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -37,10 +35,6 @@ public class Team extends BaseEntity {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "robot_id", referencedColumnName = "id")
     private Robot robot;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "competition_id", referencedColumnName = "id")
-    private Competition competition;
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TeamMember> members = new ArrayList<>();

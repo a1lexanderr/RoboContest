@@ -67,6 +67,6 @@ public class User extends BaseEntity {
     @Column(name = "account_non_expired")
     private boolean accountNonExpired = true;
 
-    @ManyToMany(mappedBy = "users")
+    @OneToMany(mappedBy = "captain")
     private List<Team> teams = new ArrayList<>();
 }
