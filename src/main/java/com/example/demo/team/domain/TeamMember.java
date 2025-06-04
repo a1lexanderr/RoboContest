@@ -1,6 +1,7 @@
 package com.example.demo.team.domain;
 
 import com.example.demo.common.BaseEntity;
+import com.example.demo.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,12 +13,13 @@ import lombok.*;
 @Builder
 @Table(name = "team_members")
 public class TeamMember extends BaseEntity {
-    @Column(nullable = false)
-    private String fullName;
-    @Column(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     private String role;
 
-    @ManyToOne
-    @JoinColumn(name = "team_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "team_id", nullable = false)
     private Team team;
 }

@@ -14,5 +14,4 @@ public interface CompetitionService {
     void deleteCompetition(Long id);
     CompetitionDetailsDTO findCompetition(Long id);
     List<CompetitionSummaryDTO> findAllCompetitions();
-
 }
