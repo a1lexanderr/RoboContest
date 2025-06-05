@@ -3,7 +3,6 @@ package com.example.demo.robot.service;
 import com.example.demo.common.Image;
 import com.example.demo.common.exception.business.robot.RobotNotFoundException;
 import com.example.demo.common.exception.business.team.TeamNotFoundException;
-import com.example.demo.common.mapper.ImageMapper;
 import com.example.demo.common.service.ImageService;
 import com.example.demo.robot.domain.Robot;
 import com.example.demo.robot.dto.RobotDTO;

@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @Slf4j
-@RequestMapping("/api/competitions")
+@RequestMapping("/api/v1/competitions")
 public class CompetitionController {
     private final CompetitionService competitionService;
 

@@ -1,7 +1,9 @@
 package com.example.demo.team.dto;
 
 public record TeamMemberResponseDTO(
-        String fullname,
-        String role
-) {
-}
+        Long memberRecordId,
+        Long userId,
+        String username,
+        String firstName,
+        String lastName
+) {}
