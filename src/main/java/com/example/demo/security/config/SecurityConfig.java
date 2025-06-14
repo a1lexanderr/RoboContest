@@ -4,11 +4,13 @@ import com.example.demo.security.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -28,6 +30,7 @@ import java.util.Arrays;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@EnableMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -39,16 +42,62 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/users/register").permitAll()
-                        .requestMatchers("/api/competitions/**").permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/user/**").hasRole("USER")
+                        .requestMatchers(
+                                "/api/v1/auth/**",
+                                "/api/v1/users/register",
+                                "/api/v1/competitions/**",
+                                "/api/v1/teams",
+                                "/api/v1/teams/{teamId}",
+                                "/api/v1/teams/{teamId}/members",
+                                "/api/v1/teams/{teamId}/robot",
+                                "/api/v1/robots/{robotId}"
+                        ).permitAll()
+                        .requestMatchers(
+                                "/api/v1/users/me/**",
+                                "/api/v1/users/search"
+                        ).authenticated()
+                        .requestMatchers(
+                                HttpMethod.POST, "/api/v1/competitions"
+                        ).hasRole("ADMIN")
+                        .requestMatchers(
+                                HttpMethod.PUT, "/api/v1/competitions/{competitionId}"
+                        ).hasRole("ADMIN")
+                        .requestMatchers(
+                                HttpMethod.DELETE, "/api/v1/competitions/{competitionId}"
+                        ).hasRole("ADMIN")
+                        .requestMatchers(
+                                HttpMethod.POST, "/api/v1/teams"
+                        ).authenticated()
+                        .requestMatchers(
+                                HttpMethod.DELETE, "/api/v1/teams/{teamId}"
+                        ).authenticated()
+                        .requestMatchers(
+                                HttpMethod.PUT, "/api/v1/teams/{teamId}/**"
+                        ).authenticated()
+                        .requestMatchers(
+                                HttpMethod.POST, "/api/v1/teams/{teamId}/members"
+                        ).authenticated()
+                        .requestMatchers(
+                                HttpMethod.DELETE, "/api/v1/teams/{teamId}/members/{userIdToRemove}"
+                        ).authenticated()
+                        .requestMatchers(
+                                HttpMethod.POST, "/api/v1/teams/{teamId}/robot"
+                        ).authenticated()
+                        .requestMatchers(
+                                HttpMethod.PUT, "/api/v1/teams/{teamId}/robot"
+                        ).authenticated()
+                        .requestMatchers(
+                                HttpMethod.DELETE, "/api/v1/teams/{teamId}/robot"
+                        ).authenticated()
+                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/**").authenticated()
+
+                        .requestMatchers("/static/**", "/docs/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                                .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                 );
 
         return http.build();
@@ -57,10 +106,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:8080"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With", "Accept"));
         configuration.setExposedHeaders(Arrays.asList("Authorization"));
+        configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

@@ -26,5 +26,4 @@ public class RobotController {
         RobotResponseDTO robot = robotService.findRobotById(robotId);
         return ResponseEntity.ok(robot);
     }
-
 }

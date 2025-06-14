@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
-@RequestMapping("api/images")
+@RequestMapping("api/v1/images")
 public class ImageController {
     private final ImageService imageService;
     private final ImageMapper imageMapper;

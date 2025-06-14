@@ -17,7 +17,7 @@ import org.springframework.web.servlet.HandlerMapping;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/api/files")
+@RequestMapping("/api/v1/files")
 @RequiredArgsConstructor
 public class FileController {
     private final FileStorageService fileStorageService;
