@@ -12,7 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "robot")
+@Table(name = "robots")
 public class Robot extends BaseEntity {
     private String name;
     private String description;

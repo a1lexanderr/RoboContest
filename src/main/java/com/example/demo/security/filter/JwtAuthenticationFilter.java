@@ -38,18 +38,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             Optional<String> jwtToken = extractJwtToken(request);
 
-            jwtToken.ifPresent(token -> {
+            if (jwtToken.isPresent()) {
                 try {
-                    authenticateUser(token, request);
+                    authenticateUser(jwtToken.get(), request);
                 } catch (Exception e) {
-                    logger.warn("Failed to authenticate user with token", e);
+                    logger.warn("Invalid JWT token", e);
                     SecurityContextHolder.clearContext();
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
+                    return;
                 }
-            });
-
+            }
         } catch (Exception ex) {
-            logger.error("Could not set user authentication in security context", ex);
+            logger.error("Error processing JWT authentication", ex);
             SecurityContextHolder.clearContext();
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication error");
+            return;
         }
 
         filterChain.doFilter(request, response);

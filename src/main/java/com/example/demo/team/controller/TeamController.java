@@ -4,6 +4,7 @@ package com.example.demo.team.controller;
 import com.example.demo.robot.dto.RobotDTO;
 import com.example.demo.robot.dto.RobotResponseDTO;
 import com.example.demo.robot.service.RobotService;
+import com.example.demo.security.model.UserPrincipal;
 import com.example.demo.team.dto.*;
 import com.example.demo.team.service.TeamService;
 import com.example.demo.user.domain.User;
@@ -38,7 +39,7 @@ public class TeamController {
     public ResponseEntity<TeamResponseDTO> createTeam(
             @Valid @RequestPart("teamData") TeamCreateDTO teamCreateDTO,
             @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
-            @AuthenticationPrincipal User currentUser) {
+            @AuthenticationPrincipal UserPrincipal currentUser) {
         log.info("API запрос на создание команды от пользователя: {}", currentUser.getUsername());
         TeamResponseDTO createdTeam = teamService.createTeam(teamCreateDTO, imageFile, currentUser);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdTeam);
@@ -53,7 +54,7 @@ public class TeamController {
     public ResponseEntity<TeamResponseDTO> updateTeamDetails(
             @PathVariable Long teamId,
             @Valid @RequestBody TeamUpdateDTO updateDTO,
-            @AuthenticationPrincipal User currentUser) {
+            @AuthenticationPrincipal UserPrincipal currentUser) {
         TeamResponseDTO updatedTeam = teamService.updateTeamDetails(teamId, updateDTO, currentUser);
         return ResponseEntity.ok(updatedTeam);
     }
@@ -62,13 +63,13 @@ public class TeamController {
     public ResponseEntity<TeamResponseDTO> updateTeamImage(
             @PathVariable Long teamId,
             @RequestPart("imageFile") MultipartFile imageFile,
-            @AuthenticationPrincipal User currentUser) {
+            @AuthenticationPrincipal UserPrincipal currentUser) {
         TeamResponseDTO updatedTeam = teamService.updateTeamImage(teamId, imageFile, currentUser);
         return ResponseEntity.ok(updatedTeam);
     }
 
     @DeleteMapping("/{teamId}")
-    public ResponseEntity<Void> deleteTeam(@PathVariable Long teamId, @AuthenticationPrincipal User currentUser) {
+    public ResponseEntity<Void> deleteTeam(@PathVariable Long teamId, @AuthenticationPrincipal UserPrincipal currentUser) {
         teamService.deleteTeam(teamId, currentUser);
         return ResponseEntity.noContent().build();
     }
@@ -77,7 +78,7 @@ public class TeamController {
     public ResponseEntity<TeamMemberResponseDTO> addMemberToTeam(
             @PathVariable Long teamId,
             @Valid @RequestBody TeamMemberAddDTO memberAddDTO,
-            @AuthenticationPrincipal User currentUser) {
+            @AuthenticationPrincipal UserPrincipal currentUser) {
         TeamMemberResponseDTO newMember = teamService.addMemberToTeam(teamId, memberAddDTO, currentUser);
         return ResponseEntity.status(HttpStatus.CREATED).body(newMember);
     }
@@ -86,7 +87,7 @@ public class TeamController {
     public ResponseEntity<Void> removeMemberFromTeam(
             @PathVariable Long teamId,
             @PathVariable Long userIdToRemove,
-            @AuthenticationPrincipal User currentUser) {
+            @AuthenticationPrincipal UserPrincipal currentUser) {
         teamService.removeMemberFromTeam(teamId, userIdToRemove, currentUser);
         return ResponseEntity.noContent().build();
     }
@@ -97,9 +98,9 @@ public class TeamController {
     }
 
     @GetMapping("/my-teams")
-    public ResponseEntity<List<TeamSummaryDTO>> getCurrentUserTeams(@AuthenticationPrincipal User currentUser) {
+    public ResponseEntity<List<TeamSummaryDTO>> getCurrentUserTeams(@AuthenticationPrincipal UserPrincipal currentUser) {
         if (currentUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // На всякий случай
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         return ResponseEntity.ok(teamService.getTeamsForUser(currentUser));
     }
@@ -117,7 +118,7 @@ public class TeamController {
             @PathVariable Long teamId,
             @Valid @RequestPart("robotData") RobotDTO robotDTO,
             @RequestPart(value = "robotImageFile", required = false) MultipartFile robotImageFile,
-            @AuthenticationPrincipal User currentUser) {
+            @AuthenticationPrincipal UserPrincipal currentUser) {
         RobotResponseDTO robot = robotService.createRobotForTeam(teamId, robotDTO, robotImageFile, currentUser);
         return ResponseEntity.status(HttpStatus.CREATED).body(robot);
     }
@@ -127,7 +128,7 @@ public class TeamController {
             @PathVariable Long teamId,
             @Valid @RequestPart("robotData") RobotDTO robotDTO,
             @RequestPart(value = "robotImageFile", required = false) MultipartFile robotImageFile,
-            @AuthenticationPrincipal User currentUser) {
+            @AuthenticationPrincipal UserPrincipal currentUser) {
         RobotResponseDTO robot = robotService.updateRobotForTeam(teamId, robotDTO, robotImageFile, currentUser);
         return ResponseEntity.ok(robot);
     }
@@ -141,7 +142,7 @@ public class TeamController {
     @DeleteMapping("/{teamId}/robot")
     public ResponseEntity<Void> deleteRobotForTeam(
             @PathVariable Long teamId,
-            @AuthenticationPrincipal User currentUser) {
+            @AuthenticationPrincipal UserPrincipal currentUser) {
         robotService.deleteRobotForTeam(teamId, currentUser);
         return ResponseEntity.noContent().build();
     }

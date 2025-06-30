@@ -9,6 +9,7 @@ import com.example.demo.robot.dto.RobotDTO;
 import com.example.demo.robot.dto.RobotResponseDTO;
 import com.example.demo.robot.mapper.RobotMapper;
 import com.example.demo.robot.repository.RobotRepository;
+import com.example.demo.security.model.UserPrincipal;
 import com.example.demo.team.domain.Team;
 import com.example.demo.team.repository.TeamRepository;
 import com.example.demo.user.domain.User;
@@ -40,7 +41,7 @@ public class RobotServiceImpl implements RobotService {
 
     @Override
     @Transactional
-    public RobotResponseDTO createRobotForTeam(Long teamId, RobotDTO robotDTO, MultipartFile imageFile, User currentUser) {
+    public RobotResponseDTO createRobotForTeam(Long teamId, RobotDTO robotDTO, MultipartFile imageFile, UserPrincipal currentUser) {
         log.info("Попытка создать робота для команды ID: {} пользователем: {}", teamId, currentUser.getUsername());
 
         Team team = findAndAuthorizeTeamOrThrow(teamId, currentUser);
@@ -66,24 +67,18 @@ public class RobotServiceImpl implements RobotService {
 
     @Override
     @Transactional
-    public RobotResponseDTO updateRobotForTeam(Long teamId, RobotDTO robotDTO, MultipartFile imageFile, User currentUser) {
+    public RobotResponseDTO updateRobotForTeam(Long teamId, RobotDTO robotDTO, MultipartFile imageFile, UserPrincipal currentUser) {
         log.info("Попытка обновить робота для команды ID: {} пользователем: {}", teamId, currentUser.getUsername());
-
         Team team = findAndAuthorizeTeamOrThrow(teamId, currentUser);
-
         Robot robot = team.getRobot();
         if (robot == null) {
             log.warn("Робот для команды ID: {} не найден. Обновление невозможно.", teamId);
             throw new RobotNotFoundException("Робот для команды " + teamId + " не найден.");
         }
-
         Image oldImage = robot.getImage();
         robotMapper.updateRobotFromDto(robotDTO, robot);
-
         processRobotImage(robot, imageFile, oldImage);
-
         Robot savedRobot = robotRepository.save(robot);
-
         log.info("Робот ID: {} успешно обновлен для команды ID: {}", savedRobot.getId(), teamId);
         return robotMapper.toResponseDTO(savedRobot);
     }
@@ -113,7 +108,7 @@ public class RobotServiceImpl implements RobotService {
 
     @Override
     @Transactional
-    public void deleteRobotForTeam(Long teamId, User currentUser) {
+    public void deleteRobotForTeam(Long teamId, UserPrincipal currentUser) {
         log.info("Попытка удалить робота для команды ID: {} пользователем: {}", teamId, currentUser.getUsername());
         Team team = findAndAuthorizeTeamOrThrow(teamId, currentUser);
 
@@ -160,7 +155,7 @@ public class RobotServiceImpl implements RobotService {
         }
     }
 
-    private Team findAndAuthorizeTeamOrThrow(Long teamId, User currentUser) {
+    private Team findAndAuthorizeTeamOrThrow(Long teamId, UserPrincipal currentUser) {
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> {
                     log.warn("Команда с ID: {} не найдена.", teamId);

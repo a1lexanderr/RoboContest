@@ -7,6 +7,7 @@ import com.example.demo.common.exception.business.team.TeamNotFoundException;
 import com.example.demo.common.exception.business.user.UserNotFoundException;
 import com.example.demo.common.service.ImageService;
 import com.example.demo.robot.service.RobotService;
+import com.example.demo.security.model.UserPrincipal;
 import com.example.demo.team.domain.Team;
 import com.example.demo.team.domain.TeamMember;
 import com.example.demo.team.dto.*;
@@ -60,15 +61,17 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     @Transactional
-    public TeamResponseDTO createTeam(TeamCreateDTO teamCreateDTO, MultipartFile imageFile, User captain) {
-        log.info("Пользователь {} создает команду с названием: {}", captain.getUsername(), teamCreateDTO.name());
+    public TeamResponseDTO createTeam(TeamCreateDTO teamCreateDTO, MultipartFile imageFile, UserPrincipal currentUser) {
+        User user = userRepository.findById(currentUser.getId()).orElseThrow(() -> new UserNotFoundException(currentUser.getId()));
+
+        log.info("Пользователь {} создает команду с названием: {}", currentUser.getUsername(), teamCreateDTO.name());
 
         if (teamRepository.existsByName(teamCreateDTO.name())) {
             throw new ResourceAlreadyExistsException("Команда с названием '" + teamCreateDTO.name() + "' уже существует.");
         }
 
         Team team = teamMapper.toEntity(teamCreateDTO);
-        team.setCaptain(captain);
+        team.setCaptain(user);
 
         if (imageFile != null && !imageFile.isEmpty()) {
             Image teamImage = imageService.saveImage(imageFile, team.getName() + " Logo", true, "team_logos");
@@ -78,12 +81,12 @@ public class TeamServiceImpl implements TeamService {
         Team savedTeam = teamRepository.save(team);
 
         TeamMember captainAsMember = TeamMember.builder()
-                .user(captain)
+                .user(user)
                 .team(savedTeam)
                 .role("Капитан")
                 .build();
         teamMemberRepository.save(captainAsMember);
-        log.info("Капитан {} добавлен как участник в команду {}", captain.getUsername(), savedTeam.getName());
+        log.info("Капитан {} добавлен как участник в команду {}", currentUser.getUsername(), savedTeam.getName());
 
         return teamMapper.toResponseDTO(savedTeam);
     }
@@ -99,7 +102,7 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     @Transactional
-    public TeamResponseDTO updateTeamDetails(Long teamId, TeamUpdateDTO updateDTO, User currentUser) {
+    public TeamResponseDTO updateTeamDetails(Long teamId, TeamUpdateDTO updateDTO, UserPrincipal currentUser) {
         log.info("Пользователь {} обновляет детали команды ID: {}", currentUser.getUsername(), teamId);
         Team team = findTeamAndAuthorizeCaptain(teamId, currentUser.getId());
 
@@ -110,7 +113,7 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     @Transactional
-    public TeamResponseDTO updateTeamImage(Long teamId, MultipartFile imageFile, User currentUser) {
+    public TeamResponseDTO updateTeamImage(Long teamId, MultipartFile imageFile, UserPrincipal currentUser) {
         log.info("Пользователь {} обновляет изображение команды ID: {}", currentUser.getUsername(), teamId);
         Team team = findTeamAndAuthorizeCaptain(teamId, currentUser.getId());
 
@@ -134,7 +137,7 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     @Transactional
-    public void deleteTeam(Long teamId, User currentUser) {
+    public void deleteTeam(Long teamId, UserPrincipal currentUser) {
         log.info("Пользователь {} удаляет команду ID: {}", currentUser.getUsername(), teamId);
         Team team = findTeamAndAuthorizeCaptain(teamId, currentUser.getId());
 
@@ -162,7 +165,7 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     @Transactional
-    public TeamMemberResponseDTO addMemberToTeam(Long teamId, TeamMemberAddDTO memberAddDTO, User currentUser) {
+    public TeamMemberResponseDTO addMemberToTeam(Long teamId, TeamMemberAddDTO memberAddDTO, UserPrincipal currentUser) {
         log.info("Пользователь {} добавляет участника ID {} в команду ID {}", currentUser.getUsername(), memberAddDTO.userId(), teamId);
         Team team = findTeamAndAuthorizeCaptain(teamId, currentUser.getId());
 
@@ -186,7 +189,7 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     @Transactional
-    public void removeMemberFromTeam(Long teamId, Long userIdToRemove, User currentUser) {
+    public void removeMemberFromTeam(Long teamId, Long userIdToRemove, UserPrincipal currentUser) {
         log.info("Пользователь {} удаляет участника ID {} из команды ID {}", currentUser.getUsername(), userIdToRemove, teamId);
         Team team = findTeamAndAuthorizeCaptain(teamId, currentUser.getId());
 
@@ -218,7 +221,8 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<TeamSummaryDTO> getTeamsForUser(User user) {
+    public List<TeamSummaryDTO> getTeamsForUser(UserPrincipal currentUser) {
+        User user = userRepository.findById(currentUser.getId()).orElseThrow(() -> new UserNotFoundException(currentUser.getId()));
         List<Team> teams = teamRepository.findDistinctByCaptainOrMembersUser(user, user);
         return teams.stream()
                 .map(teamMapper::toSummaryDTO)

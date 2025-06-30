@@ -5,5 +5,4 @@ import com.example.demo.user.dto.UserRegistrationDTO;
 
 public interface UserService {
     UserDTO registerUser(UserRegistrationDTO registrationDto);
-    
 }
