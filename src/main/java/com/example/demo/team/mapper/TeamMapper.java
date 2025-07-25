@@ -12,7 +12,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring", uses = {ImageMapper.class, UserMapper.class, RobotMapper.class, TeamMemberMapper.class}) // Добавьте нужные мапперы
+@Mapper(componentModel = "spring", uses = {ImageMapper.class, UserMapper.class, RobotMapper.class, TeamMemberMapper.class})
 public interface TeamMapper {
     @Mapping(target = "image", ignore = true)
     @Mapping(target = "captain", ignore = true)

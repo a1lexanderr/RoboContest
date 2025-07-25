@@ -7,14 +7,17 @@ import com.example.demo.robot.domain.Robot;
 import com.example.demo.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.proxy.HibernateProxy;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
-@EqualsAndHashCode(callSuper = true)
 @Entity
-@Data
+@Getter
+@Setter
+@ToString(exclude = {"image", "captain", "robot"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -37,8 +40,26 @@ public class Team extends BaseEntity {
     private Robot robot;
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
     private List<TeamMember> members = new ArrayList<>();
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private List<ApplicationForm> applications = new ArrayList<>();
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        Team team = (Team) o;
+        return getId() != null && Objects.equals(getId(), team.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
 }
