@@ -166,11 +166,11 @@ public class TeamServiceImpl implements TeamService {
     @Override
     @Transactional
     public TeamMemberResponseDTO addMemberToTeam(Long teamId, TeamMemberAddDTO memberAddDTO, UserPrincipal currentUser) {
-        log.info("Пользователь {} добавляет участника ID {} в команду ID {}", currentUser.getUsername(), memberAddDTO.userId(), teamId);
+        log.info("Пользователь {} добавляет участника {} в команду ID {}", currentUser.getUsername(), memberAddDTO.username(), teamId);
         Team team = findTeamAndAuthorizeCaptain(teamId, currentUser.getId());
 
-        User userToAdd = userRepository.findById(memberAddDTO.userId())
-                .orElseThrow(() -> new UserNotFoundException(memberAddDTO.userId()));
+        User userToAdd = userRepository.findByUsername(memberAddDTO.username())
+                .orElseThrow(() -> new UserNotFoundException(memberAddDTO.username()));
 
         boolean alreadyMember = teamMemberRepository.existsByTeamIdAndUserId(teamId, userToAdd.getId());
         if (alreadyMember) {

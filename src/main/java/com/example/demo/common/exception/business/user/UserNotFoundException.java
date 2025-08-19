@@ -13,4 +13,12 @@ public class UserNotFoundException extends BusinessException {
                 Collections.singletonMap("id", String.valueOf(id))
         );
     }
+
+    public UserNotFoundException(String username) {
+        super(
+                String.format("User not found: %s", username),
+                HttpStatus.NOT_FOUND,
+                Collections.singletonMap("username", username)
+        );
+    }
 }

@@ -32,6 +32,7 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 @EnableMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfig {
+
     private final UserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
@@ -47,57 +48,31 @@ public class SecurityConfig {
                                 "/api/v1/users/register",
                                 "/api/v1/competitions/**",
                                 "/api/v1/teams",
-                                "/api/v1/teams/{teamId}",
-                                "/api/v1/teams/{teamId}/members",
-                                "/api/v1/teams/{teamId}/robot",
-                                "/api/v1/robots/{robotId}"
+                                "/api/v1/teams/*",
+                                "/api/v1/teams/*/members",
+                                "/api/v1/teams/*/robot",
+                                "/api/v1/robots/*",
+                                "/api/v1/files/**",
+                                "/static/**", "/docs/**"
                         ).permitAll()
-                        .requestMatchers(
-                                "/api/v1/users/me/**",
-                                "/api/v1/users/search"
-                        ).authenticated()
-                        .requestMatchers(
-                                HttpMethod.POST, "/api/v1/competitions"
-                        ).hasRole("ADMIN")
-                        .requestMatchers(
-                                HttpMethod.PUT, "/api/v1/competitions/{competitionId}"
-                        ).hasRole("ADMIN")
-                        .requestMatchers(
-                                HttpMethod.DELETE, "/api/v1/competitions/{competitionId}"
-                        ).hasRole("ADMIN")
-                        .requestMatchers(
-                                HttpMethod.POST, "/api/v1/teams"
-                        ).authenticated()
-                        .requestMatchers(
-                                HttpMethod.DELETE, "/api/v1/teams/{teamId}"
-                        ).authenticated()
-                        .requestMatchers(
-                                HttpMethod.PUT, "/api/v1/teams/{teamId}/**"
-                        ).authenticated()
-                        .requestMatchers(
-                                HttpMethod.POST, "/api/v1/teams/{teamId}/members"
-                        ).permitAll()
-                        .requestMatchers(
-                                HttpMethod.DELETE, "/api/v1/teams/{teamId}/members/{userIdToRemove}"
-                        ).authenticated()
-                        .requestMatchers(
-                                HttpMethod.POST, "/api/v1/teams/{teamId}/robot"
-                        ).authenticated()
-                        .requestMatchers(
-                                HttpMethod.PUT, "/api/v1/teams/{teamId}/robot"
-                        ).authenticated()
-                        .requestMatchers(
-                                HttpMethod.DELETE, "/api/v1/teams/{teamId}/robot"
-                        ).authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/competitions").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/competitions/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/competitions/*").hasRole("ADMIN")
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/teams").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/teams/*").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/teams/*/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/teams/*/members").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/teams/*/members/*").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/teams/*/robot").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/teams/*/robot").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/teams/*/robot").authenticated()
                         .requestMatchers("/api/v1/**").authenticated()
-
-                        .requestMatchers("/static/**", "/docs/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(ex -> ex
-                                .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                 );
 
         return http.build();
@@ -106,7 +81,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:8080", "http://localhost:5173"));
+        configuration.setAllowedOrigins(Arrays.asList(
+                "http://localhost:3000",
+                "http://localhost:8080",
+                "http://localhost:5173"
+        ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With", "Accept"));
         configuration.setExposedHeaders(Arrays.asList("Authorization"));

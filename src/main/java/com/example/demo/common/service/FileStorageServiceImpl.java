@@ -77,10 +77,9 @@ public class FileStorageServiceImpl implements FileStorageService {
             String newFileName = UUID.randomUUID().toString() + getFileExtension(fileName);
             Path filePath = targetDir.resolve(newFileName);
 
-            log.debug("About to copy file to path: {}", filePath);
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-            String result = Paths.get(subdirectory, newFileName).toString();
+            String result = subdirectory + "/" + newFileName;
             log.info("File successfully stored: {}, size: {} bytes", result, file.getSize());
             return result;
         } catch (IOException e) {
@@ -135,7 +134,8 @@ public class FileStorageServiceImpl implements FileStorageService {
         return (dotIndex == -1) ? "" : filename.substring(dotIndex);
     }
 
-    public String buildFileUrl(String filePath) {
-        return baseUrl + "/api/files/" + filePath;
+    public String buildFileUrl(String filePath){
+        String normalizedPath = filePath.replace("\\", "/");
+        return baseUrl + "/api/v1/files/" + normalizedPath;
     }
 }

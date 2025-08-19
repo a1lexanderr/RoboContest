@@ -17,7 +17,7 @@ import java.util.Objects;
 @Entity
 @Getter
 @Setter
-@ToString(exclude = {"image", "captain", "robot"})
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -29,14 +29,17 @@ public class Team extends BaseEntity {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id", referencedColumnName = "id")
+    @ToString.Exclude
     private Image image;
 
     @ManyToOne
     @JoinColumn(name = "captain_id", nullable = false)
+    @ToString.Exclude
     private User captain;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "robot_id", referencedColumnName = "id")
+    @ToString.Exclude
     private Robot robot;
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
