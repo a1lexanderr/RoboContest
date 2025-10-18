@@ -16,6 +16,7 @@ public record UserRegistrationDTO(
         String email,
         @Pattern(regexp = "^\\+?[1-9][0-9]{7,14}$")
         String phoneNumber,
+
         @NotBlank @Size(min = 8, max = 32)
         String password
 ) {}

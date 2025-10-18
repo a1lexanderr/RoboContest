@@ -1,8 +1,11 @@
 package com.example.demo.user.service;
 
+import com.example.demo.common.dto.ImageDTO;
 import com.example.demo.common.exception.business.BusinessException;
+import com.example.demo.common.exception.business.user.UserNotFoundException;
 import com.example.demo.user.domain.User;
 import com.example.demo.user.dto.UserDTO;
+import com.example.demo.user.dto.UserProfileDTO;
 import com.example.demo.user.dto.UserRegistrationDTO;
 import com.example.demo.user.mapper.UserMapper;
 import com.example.demo.user.repository.UserRepository;
@@ -47,9 +50,37 @@ public class UserServiceImpl implements UserService{
 
         User user = userMapper.toEntity(userDTO);
         user.setPasswordHash(passwordEncoder.encode(userDTO.password()));
+
+
+
         userRepository.save(user);
 
         return userMapper.toDto(user);
+    }
+
+    public UserProfileDTO getUser(String username){
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found: " + username));
+
+        ImageDTO imageDTO = null;
+        if (user.getImage() != null) {
+            imageDTO = new ImageDTO(
+                    user.getImage().getId(),
+                    user.getImage().getTitle(),
+                    user.getImage().getUrl()
+            );
+        }
+
+        return new UserProfileDTO(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getPhoneNumber(),
+                imageDTO,
+                user.getRoles()
+        );
     }
 
 
