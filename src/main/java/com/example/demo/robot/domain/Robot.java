@@ -3,6 +3,7 @@ package com.example.demo.robot.domain;
 import com.example.demo.common.BaseEntity;
 import com.example.demo.common.Image;
 import com.example.demo.team.domain.Team;
+import com.example.demo.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
@@ -23,8 +24,13 @@ public class Robot extends BaseEntity {
     @JoinColumn(name = "image_id", referencedColumnName = "id")
     private Image image;
 
-    @OneToOne(mappedBy = "robot")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "team_id")
     private Team team;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by_id")
+    private User createdBy;
 
     @Override
     public final boolean equals(Object o) {

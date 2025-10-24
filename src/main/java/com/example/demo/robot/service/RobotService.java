@@ -8,10 +8,14 @@ import com.example.demo.team.repository.TeamRepository;
 import com.example.demo.user.domain.User;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 public interface RobotService {
-    RobotResponseDTO createRobotForTeam(Long teamId, RobotDTO robotDTO, MultipartFile imageFile, UserPrincipal currentUser);
-    RobotResponseDTO updateRobotForTeam(Long teamId, RobotDTO robotDTO, MultipartFile imageFile, UserPrincipal currentUser);
-    RobotResponseDTO findRobotByTeamId(Long teamId);
-    RobotResponseDTO findRobotById(Long robotId);
-    void deleteRobotForTeam(Long teamId, UserPrincipal currentUser);
+    RobotResponseDTO createRobotForTeam(Long teamId, RobotDTO robotDTO, MultipartFile file, UserPrincipal user);
+    RobotResponseDTO updateRobotForTeam(Long teamId, Long robotId, RobotDTO robotDTO, MultipartFile file, UserPrincipal user);
+    void deleteRobotForTeam(Long teamId, Long robotId, UserPrincipal user);
+    List<RobotResponseDTO> findAllByTeamId(Long teamId);
+    RobotResponseDTO findCurrentRobotByTeamId(Long teamId);
+    RobotResponseDTO setCurrentRobot(Long teamId, Long robotId, UserPrincipal user);
+
 }

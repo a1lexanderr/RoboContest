@@ -6,6 +6,7 @@ import com.example.demo.common.exception.business.ResourceNotFoundException;
 import com.example.demo.common.exception.business.team.TeamNotFoundException;
 import com.example.demo.common.exception.business.user.UserNotFoundException;
 import com.example.demo.common.service.ImageService;
+import com.example.demo.robot.domain.Robot;
 import com.example.demo.robot.service.RobotService;
 import com.example.demo.security.model.UserPrincipal;
 import com.example.demo.team.domain.Team;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -141,12 +143,14 @@ public class TeamServiceImpl implements TeamService {
         log.info("Пользователь {} удаляет команду ID: {}", currentUser.getUsername(), teamId);
         Team team = findTeamAndAuthorizeCaptain(teamId, currentUser.getId());
 
-        if (team.getRobot() != null) {
-            try {
-                robotService.deleteRobotForTeam(teamId, currentUser);
-                log.info("Робот команды ID {} удален.", teamId);
-            } catch (Exception e) {
-                log.error("Ошибка при удалении робота для команды ID {}: {}", teamId, e.getMessage());
+        if (team.getRobots() != null && !team.getRobots().isEmpty()) {
+            for (Robot robot : new ArrayList<>(team.getRobots())) {
+                try {
+                    robotService.deleteRobotForTeam(teamId, robot.getId(), currentUser);
+                    log.info("Робот ID {} команды ID {} удалён.", robot.getId(), teamId);
+                } catch (Exception e) {
+                    log.error("Ошибка при удалении робота ID {}: {}", robot.getId(), e.getMessage());
+                }
             }
         }
 
@@ -162,6 +166,7 @@ public class TeamServiceImpl implements TeamService {
         teamRepository.delete(team);
         log.info("Команда ID {} успешно удалена.", teamId);
     }
+
 
     @Override
     @Transactional

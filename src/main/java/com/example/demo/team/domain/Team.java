@@ -37,10 +37,13 @@ public class Team extends BaseEntity {
     @ToString.Exclude
     private User captain;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "robot_id", referencedColumnName = "id")
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
-    private Robot robot;
+    private List<Robot> robots = new ArrayList<>();
+
+    @OneToOne
+    @JoinColumn(name = "current_robot_id")
+    private Robot currentRobot;
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude

@@ -16,7 +16,7 @@ import org.mapstruct.MappingTarget;
 public interface TeamMapper {
     @Mapping(target = "image", ignore = true)
     @Mapping(target = "captain", ignore = true)
-    @Mapping(target = "robot", ignore = true)
+    @Mapping(target = "currentRobot", ignore = true)
     @Mapping(target = "members", ignore = true)
     @Mapping(target = "applications", ignore = true)
     Team toEntity(TeamCreateDTO createDTO);
@@ -24,7 +24,6 @@ public interface TeamMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "image", ignore = true)
     @Mapping(target = "captain", ignore = true)
-    @Mapping(target = "robot", ignore = true)
     @Mapping(target = "members", ignore = true)
     @Mapping(target = "applications", ignore = true)
     @Mapping(target = "createdAt", ignore = true)

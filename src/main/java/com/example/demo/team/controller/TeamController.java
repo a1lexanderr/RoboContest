@@ -112,8 +112,7 @@ public class TeamController {
         return ResponseEntity.ok(teamService.getAllTeams(search, pageable));
     }
 
-
-    @PostMapping(value = "/{teamId}/robot", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/{teamId}/robots", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<RobotResponseDTO> createRobotForTeam(
             @PathVariable Long teamId,
             @Valid @RequestPart("robotData") RobotDTO robotDTO,
@@ -123,27 +122,44 @@ public class TeamController {
         return ResponseEntity.status(HttpStatus.CREATED).body(robot);
     }
 
-    @PutMapping(value = "/{teamId}/robot", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(value = "/{teamId}/robots/{robotId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<RobotResponseDTO> updateRobotForTeam(
             @PathVariable Long teamId,
+            @PathVariable Long robotId,
             @Valid @RequestPart("robotData") RobotDTO robotDTO,
             @RequestPart(value = "robotImageFile", required = false) MultipartFile robotImageFile,
             @AuthenticationPrincipal UserPrincipal currentUser) {
-        RobotResponseDTO robot = robotService.updateRobotForTeam(teamId, robotDTO, robotImageFile, currentUser);
+        RobotResponseDTO robot = robotService.updateRobotForTeam(teamId, robotId, robotDTO, robotImageFile, currentUser);
         return ResponseEntity.ok(robot);
     }
 
-    @GetMapping(value = "/{teamId}/robot")
-    public ResponseEntity<RobotResponseDTO> getRobotForTeam(@PathVariable Long teamId) {
-        RobotResponseDTO robot = robotService.findRobotByTeamId(teamId);
-        return ResponseEntity.ok(robot);
-    }
-
-    @DeleteMapping("/{teamId}/robot")
+    @DeleteMapping("/{teamId}/robots/{robotId}")
     public ResponseEntity<Void> deleteRobotForTeam(
             @PathVariable Long teamId,
+            @PathVariable Long robotId,
             @AuthenticationPrincipal UserPrincipal currentUser) {
-        robotService.deleteRobotForTeam(teamId, currentUser);
+        robotService.deleteRobotForTeam(teamId, robotId, currentUser);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{teamId}/robots")
+    public ResponseEntity<List<RobotResponseDTO>> getAllRobotsForTeam(@PathVariable Long teamId) {
+        List<RobotResponseDTO> robots = robotService.findAllByTeamId(teamId);
+        return ResponseEntity.ok(robots);
+    }
+
+    @GetMapping("/{teamId}/robots/current")
+    public ResponseEntity<RobotResponseDTO> getCurrentRobotForTeam(@PathVariable Long teamId) {
+        RobotResponseDTO robot = robotService.findCurrentRobotByTeamId(teamId);
+        return ResponseEntity.ok(robot);
+    }
+
+    @PostMapping("/{teamId}/robots/current/{robotId}")
+    public ResponseEntity<RobotResponseDTO> setCurrentRobotForTeam(
+            @PathVariable Long teamId,
+            @PathVariable Long robotId,
+            @AuthenticationPrincipal UserPrincipal currentUser) {
+        RobotResponseDTO robot = robotService.setCurrentRobot(teamId, robotId, currentUser);
+        return ResponseEntity.ok(robot);
     }
 }

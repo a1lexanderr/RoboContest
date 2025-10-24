@@ -20,10 +20,10 @@ public class RobotController {
         this.robotService = robotService;
     }
 
-    @GetMapping("/{robotId}")
-    public ResponseEntity<RobotResponseDTO> getRobotById(@PathVariable Long robotId) {
-        log.info("Запрос на получение робота по ID: {}", robotId);
-        RobotResponseDTO robot = robotService.findRobotById(robotId);
-        return ResponseEntity.ok(robot);
-    }
+//    @GetMapping("/{robotId}")
+//    public ResponseEntity<RobotResponseDTO> getRobotById(@PathVariable Long robotId) {
+//        log.info("Запрос на получение робота по ID: {}", robotId);
+//        RobotResponseDTO robot = robotService.findRobotById(robotId);
+//        return ResponseEntity.ok(robot);
+//    }
 }
