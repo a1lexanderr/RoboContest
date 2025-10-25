@@ -20,4 +20,5 @@ public interface ApplicationFormService {
     Page<ApplicationFormResponseDTO> getAllApplicationsWithFilters(ApplicationStatus status, Long competitionId, String teamName, Pageable pageable);
     List<ApplicationFormResponseDTO> getApplicationsForTeam(Long teamId);
     Optional<ApplicationFormResponseDTO> getApplicationForTeamAndCompetition(Long teamId, Long competitionId);
+    ApplicationFormResponseDTO createQuickApplication(Long competitionId, Long teamId, UserPrincipal currentUser);
 }

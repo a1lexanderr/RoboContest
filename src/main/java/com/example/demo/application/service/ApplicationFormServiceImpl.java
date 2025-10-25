@@ -50,6 +50,44 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
         this.applicationFormMapper = applicationFormMapper;
     }
 
+    @Transactional
+    public ApplicationFormResponseDTO createQuickApplication(
+            Long competitionId, Long teamId, UserPrincipal currentUser) {
+
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new EntityNotFoundException("Команда не найдена"));
+
+        validateTeamAccess(team, currentUser);
+
+        Competition competition = competitionRepository.findById(competitionId)
+                .orElseThrow(() -> new EntityNotFoundException("Соревнование не найдено"));
+
+        // Проверяем, что заявка еще не подана
+        if (applicationFormRepository.existsByTeamIdAndCompetitionId(teamId, competitionId)) {
+            throw new IllegalArgumentException("Application already exists for this team and competition");
+        }
+
+        // Проверяем статус соревнования
+        if (competition.getStatus() != CompetitionStatus.OPEN) {
+            throw new IllegalArgumentException("Registration is not open for this competition");
+        }
+
+        ApplicationForm newApp = ApplicationForm.builder()
+                .team(team)
+                .competition(competition)
+                .status(ApplicationStatus.PENDING)
+                .teamExperience("—")
+                .robotSpecifications("—")
+                .additionalEquipment("—")
+                .specialRequirements("—")
+                .build();
+
+        applicationFormRepository.save(newApp);
+
+        return applicationFormMapper.toResponseDTO(newApp);
+    }
+
+
     @Override
     public ApplicationFormResponseDTO createApplication(
             ApplicationFormCreateDTO createDTO,

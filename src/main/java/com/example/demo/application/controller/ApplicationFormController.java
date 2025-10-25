@@ -29,6 +29,21 @@ public class ApplicationFormController {
         this.applicationFormService = applicationFormService;
     }
 
+    @PostMapping("/quick")
+    public ResponseEntity<ApplicationFormResponseDTO> quickApply(
+            @RequestParam Long competitionId,
+            @RequestParam Long teamId,
+            @AuthenticationPrincipal UserPrincipal currentUser) {
+        log.info("Быстрая заявка: user={} teamId={} competitionId={}",
+                currentUser.getUsername(), teamId, competitionId);
+
+        ApplicationFormResponseDTO application =
+                applicationFormService.createQuickApplication(competitionId, teamId, currentUser);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(application);
+    }
+
+
     @PostMapping
     public ResponseEntity<ApplicationFormResponseDTO> createApplication(
             @Valid @RequestBody ApplicationFormCreateDTO createDTO,
