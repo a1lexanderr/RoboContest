@@ -8,6 +8,8 @@ import java.time.LocalDate;
 public record CompetitionSummaryDTO(
         Long id,
         String title,
+        String description,
+        String location,
         String image,
         CompetitionStatus status,
         LocalDate startDate,

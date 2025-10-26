@@ -14,7 +14,9 @@ public record CompetitionCreateDTO(
         String title,
         @NotBlank(message = "Description cannot be blank")
         String description,
-        @NotBlank(message = "Status is required")
+        @NotBlank(message = "Location cannot be blank")
+        String location,
+        @NotNull(message = "Status is required")
         CompetitionStatus status,
         @NotNull(message = "Start date is required")
         @FutureOrPresent(message = "Start date must be in the present or future")

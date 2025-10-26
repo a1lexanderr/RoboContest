@@ -24,7 +24,7 @@ public class ImageServiceImpl implements ImageService {
         log.info("Saving image");
         String subdirectory = determineSubdirectory(entityType);
         log.info("Subdirectory: {}", subdirectory);
-        String filePath = fileStorageService.storeFile(file, subdirectory );
+        String filePath = fileStorageService.storeFile(file);
         log.info("Saving image to {}", filePath);
 
         Image image = Image
@@ -60,7 +60,7 @@ public class ImageServiceImpl implements ImageService {
 
             String subdirectory = Paths.get(existingImage.getFilePath()).getParent().toString();
 
-            String filePath = fileStorageService.storeFile(newFile, subdirectory);
+            String filePath = fileStorageService.storeFile(newFile);
 
             existingImage.setFilePath(filePath);
             existingImage.setFileName(Paths.get(filePath).getFileName().toString());

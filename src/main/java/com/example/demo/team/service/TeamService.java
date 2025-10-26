@@ -20,5 +20,6 @@ public interface TeamService {
     void removeMemberFromTeam(Long teamId, Long userIdToRemove, UserPrincipal currentUser);
     List<TeamMemberResponseDTO> getTeamMembers(Long teamId);
     List<TeamSummaryDTO> getTeamsForUser(UserPrincipal user);
+    List<TeamSummaryDTO> getTeamsForCaptain(UserPrincipal user);
     Page<TeamSummaryDTO> getAllTeams(String searchQuery, Pageable pageable);
 }

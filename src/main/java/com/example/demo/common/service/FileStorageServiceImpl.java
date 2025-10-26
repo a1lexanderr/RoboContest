@@ -60,15 +60,16 @@ public class FileStorageServiceImpl implements FileStorageService {
         }
     }
 
-    public String storeFile(MultipartFile file, String subdirectory) {
+    public String storeFile(MultipartFile file) {
         String fileName = file.getOriginalFilename();
-        log.debug("Starting file storage process for file: {}, subdirectory: {}", fileName, subdirectory);
+        log.debug("Starting file storage process for file: {}", fileName);
 
         try {
             validateFile(file);
             log.debug("File validation passed: {}", fileName);
 
-            Path targetDir = rootLocation.resolve(subdirectory).normalize();
+            // Все изображения — в одну папку "images"
+            Path targetDir = rootLocation.resolve("images").normalize();
             if (!Files.exists(targetDir)) {
                 log.debug("Creating target directory: {}", targetDir);
                 Files.createDirectories(targetDir);
@@ -79,7 +80,7 @@ public class FileStorageServiceImpl implements FileStorageService {
 
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-            String result = subdirectory + "/" + newFileName;
+            String result = "images/" + newFileName;
             log.info("File successfully stored: {}, size: {} bytes", result, file.getSize());
             return result;
         } catch (IOException e) {
@@ -87,6 +88,7 @@ public class FileStorageServiceImpl implements FileStorageService {
             throw new StorageException("Failed to store file " + fileName, e);
         }
     }
+
 
     public Resource loadFileAsResource(String filePath) {
         try {

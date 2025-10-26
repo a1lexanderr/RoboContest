@@ -44,11 +44,11 @@ public class CompetitionController {
             @Valid @RequestPart("competitionData") CompetitionCreateDTO competitionCreateDTO,
             @RequestPart(value = "imageFile", required = false) MultipartFile imageFile
     ) {
-        log.info("Received request to create a competition");
+        log.info("🎯 Received competition data: {}", competitionCreateDTO);
         CompetitionDetailsDTO competition = competitionService.createCompetition(competitionCreateDTO, imageFile);
-        log.info("Created competition '{}' with ID: {}", competition.title(), competition.id());
         return ResponseEntity.status(HttpStatus.CREATED).body(competition);
     }
+
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CompetitionDetailsDTO> updateCompetition(

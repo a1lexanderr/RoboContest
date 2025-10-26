@@ -236,6 +236,16 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<TeamSummaryDTO> getTeamsForCaptain(UserPrincipal currentUser){
+        User user = userRepository.findById(currentUser.getId()).orElseThrow(() -> new UserNotFoundException(currentUser.getId()));
+        List<Team> teams = teamRepository.findDistinctByCaptainOrMembersUser(user, user);
+        return teams.stream()
+                .map(teamMapper::toSummaryDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Page<TeamSummaryDTO> getAllTeams(String searchQuery, Pageable pageable) {
         Page<Team> teamsPage;
         if (StringUtils.hasText(searchQuery)) {

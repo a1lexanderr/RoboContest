@@ -18,4 +18,6 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
 
     @Query("SELECT DISTINCT t FROM Team t LEFT JOIN t.members m WHERE t.captain = :captainUser OR m.user = :memberUser")
     List<Team> findDistinctByCaptainOrMembersUser(@Param("captainUser") User captainUser, @Param("memberUser") User memberUser);
+    @Query("SELECT DISTINCT t FROM Team t LEFT JOIN t.members m WHERE t.captain = :captainUser")
+    List<Team> findDistinctByCaptain(@Param("captainUser") User captainUser);
 }

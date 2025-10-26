@@ -9,6 +9,7 @@ public record CompetitionDetailsDTO(
         Long id,
         String title,
         String description,
+        String location,
         ImageDTO image,
         CompetitionStatus status,
         LocalDate startDate,

@@ -105,6 +105,14 @@ public class TeamController {
         return ResponseEntity.ok(teamService.getTeamsForUser(currentUser));
     }
 
+    @GetMapping("/captain/my-teams")
+    public ResponseEntity<List<TeamSummaryDTO>> getCurrentCaptainTeams(@AuthenticationPrincipal UserPrincipal currentUser) {
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return ResponseEntity.ok(teamService.getTeamsForCaptain(currentUser));
+    }
+
     @GetMapping
     public ResponseEntity<Page<TeamSummaryDTO>> getAllTeams(
             @RequestParam(required = false) String search,
