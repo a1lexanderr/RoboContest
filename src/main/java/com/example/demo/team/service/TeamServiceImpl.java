@@ -96,11 +96,29 @@ public class TeamServiceImpl implements TeamService {
     @Override
     @Transactional(readOnly = true)
     public TeamResponseDTO getTeamById(Long teamId) {
-        log.debug("Поиск команды по ID: {}", teamId);
-        Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new TeamNotFoundException("Команда с ID " + teamId + " не найдена."));
-        return teamMapper.toResponseDTO(team);
+        log.info("=== Запрос команды {} ===", teamId);
+        try {
+            Team team = teamRepository.findById(teamId)
+                    .orElseThrow(() -> new TeamNotFoundException("Команда с ID " + teamId + " не найдена."));
+
+            try {
+                TeamResponseDTO dto = teamMapper.toResponseDTO(team);
+                log.info("Команда найдена: {}", dto.name());
+                return dto;
+            } catch (Exception e) {
+                log.error("Ошибка при маппинге команды: {}", e.getMessage(), e);
+                throw e;
+            }
+
+        } catch (TeamNotFoundException e) {
+            log.error("Команда не найдена: {}", e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            log.error("Ошибка при маппинге команды с ID {}: {}", teamId, e.getMessage(), e);
+            throw e;
+        }
     }
+
 
     @Override
     @Transactional
@@ -171,15 +189,18 @@ public class TeamServiceImpl implements TeamService {
     @Override
     @Transactional
     public TeamMemberResponseDTO addMemberToTeam(Long teamId, TeamMemberAddDTO memberAddDTO, UserPrincipal currentUser) {
-        log.info("Пользователь {} добавляет участника {} в команду ID {}", currentUser.getUsername(), memberAddDTO.username(), teamId);
+        log.info("Пользователь {} добавляет участника ID {} в команду ID {}",
+                currentUser.getUsername(), memberAddDTO.userId(), teamId);
+
         Team team = findTeamAndAuthorizeCaptain(teamId, currentUser.getId());
 
-        User userToAdd = userRepository.findByUsername(memberAddDTO.username())
-                .orElseThrow(() -> new UserNotFoundException(memberAddDTO.username()));
+        User userToAdd = userRepository.findById(memberAddDTO.userId())
+                .orElseThrow(() -> new UserNotFoundException(memberAddDTO.userId()));
 
         boolean alreadyMember = teamMemberRepository.existsByTeamIdAndUserId(teamId, userToAdd.getId());
         if (alreadyMember) {
-            throw new ResourceAlreadyExistsException("Пользователь " + userToAdd.getUsername() + " уже является участником команды " + team.getName());
+            throw new ResourceAlreadyExistsException(
+                    "Пользователь " + userToAdd.getUsername() + " уже является участником команды " + team.getName());
         }
 
         TeamMember newMember = TeamMember.builder()
@@ -187,10 +208,11 @@ public class TeamServiceImpl implements TeamService {
                 .team(team)
                 .role(memberAddDTO.role())
                 .build();
-        TeamMember savedMember = teamMemberRepository.save(newMember);
 
+        TeamMember savedMember = teamMemberRepository.save(newMember);
         return teamMemberMapper.toTeamMemberResponseDTO(savedMember);
     }
+
 
     @Override
     @Transactional

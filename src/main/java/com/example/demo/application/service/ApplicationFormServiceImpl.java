@@ -62,12 +62,10 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
         Competition competition = competitionRepository.findById(competitionId)
                 .orElseThrow(() -> new EntityNotFoundException("Соревнование не найдено"));
 
-        // Проверяем, что заявка еще не подана
         if (applicationFormRepository.existsByTeamIdAndCompetitionId(teamId, competitionId)) {
             throw new IllegalArgumentException("Application already exists for this team and competition");
         }
 
-        // Проверяем статус соревнования
         if (competition.getStatus() != CompetitionStatus.OPEN) {
             throw new IllegalArgumentException("Registration is not open for this competition");
         }
@@ -95,22 +93,18 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
         log.info("Создание заявки на участие в соревновании {} от команды {}",
                 createDTO.competitionId(), createDTO.teamId());
 
-        // Проверяем существование команды и права доступа
         Team team = teamRepository.findById(createDTO.teamId())
                 .orElseThrow(() -> new EntityNotFoundException("Team not found with id: " + createDTO.teamId()));
 
         validateTeamAccess(team, currentUser);
 
-        // Проверяем существование соревнования
         Competition competition = competitionRepository.findById(createDTO.competitionId())
                 .orElseThrow(() -> new EntityNotFoundException("Competition not found with id: " + createDTO.competitionId()));
 
-        // Проверяем, что заявка еще не подана
         if (applicationFormRepository.existsByTeamIdAndCompetitionId(createDTO.teamId(), createDTO.competitionId())) {
             throw new IllegalArgumentException("Application already exists for this team and competition");
         }
 
-        // Проверяем статус соревнования
         if (competition.getStatus() != CompetitionStatus.OPEN) {
             throw new IllegalArgumentException("Registration is not open for this competition");
         }
@@ -147,7 +141,6 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
 
         validateTeamAccess(application.getTeam(), currentUser);
 
-        // Можно редактировать только заявки со статусом PENDING
         if (application.getStatus() != ApplicationStatus.PENDING) {
             throw new IllegalArgumentException("Cannot update application with status: " + application.getStatus());
         }
@@ -167,7 +160,6 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
             UserPrincipal currentUser) {
         log.info("Рассмотрение заявки с ID: {} пользователем: {}", applicationId, currentUser.getUsername());
 
-        // Проверяем права администратора
         if (!currentUser.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
             throw new AccessDeniedException("Only administrators can review applications");
@@ -199,7 +191,6 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
 
         validateTeamAccess(application.getTeam(), currentUser);
 
-        // Можно удалять только заявки со статусом PENDING
         if (application.getStatus() != ApplicationStatus.PENDING) {
             throw new IllegalArgumentException("Cannot delete application with status: " + application.getStatus());
         }

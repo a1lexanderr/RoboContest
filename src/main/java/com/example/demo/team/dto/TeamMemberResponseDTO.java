@@ -5,5 +5,6 @@ public record TeamMemberResponseDTO(
         Long userId,
         String username,
         String firstName,
-        String lastName
+        String lastName,
+        String role
 ) {}

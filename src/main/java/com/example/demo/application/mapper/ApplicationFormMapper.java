@@ -30,11 +30,27 @@ public interface ApplicationFormMapper {
     @Mapping(target = "reviewedBy", ignore = true)
     void updateApplicationFromDto(ApplicationFormUpdateDTO updateDTO, @MappingTarget ApplicationForm application);
 
-    @Mapping(source = "team.name", target = "teamName")
-    @Mapping(source = "competition.id", target = "competitionId")
-    @Mapping(source = "competition.title", target = "competitionTitle")
-    @Mapping(source = "reviewedBy.username", target = "reviewedByUsername")
-    ApplicationFormResponseDTO toResponseDTO(ApplicationForm applicationForm);
+    default ApplicationFormResponseDTO toResponseDTO(ApplicationForm form) {
+        if (form == null) return null;
+
+        return new ApplicationFormResponseDTO(
+                form.getId(),
+                form.getTeam() != null ? form.getTeam().getId() : null,
+                form.getTeam() != null ? form.getTeam().getName() : null,
+                form.getCompetition() != null ? form.getCompetition().getId() : null,
+                form.getCompetition() != null ? form.getCompetition().getTitle() : null,
+                form.getStatus(),
+                form.getTeamExperience(),
+                form.getRobotSpecifications(),
+                form.getAdditionalEquipment(),
+                form.getSpecialRequirements(),
+                form.getAdminComment(),
+                form.getCreatedAt(),
+                form.getUpdatedAt(),
+                form.getReviewedAt(),
+                form.getReviewedBy() != null ? form.getReviewedBy().getUsername() : null
+        );
+    }
 
     @Mapping(source = "team.name", target = "teamName")
     @Mapping(source = "competition.title", target = "competitionTitle")
